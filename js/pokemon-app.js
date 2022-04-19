@@ -13,11 +13,17 @@ const UPDATE_RATE = 100
 
 
 let landmarkCount = 0
-
+let ptOffset = 1
+let count = 3
+const hashMap = new Map();
+hashMap.set(1, "double points");
+hashMap.set(2, "no points");
+hashMap.set(3, "half points");
 let gameState = {
-	points: 0,
+	points: 3,
 	captured: [],
-	messages: []
+	messages: [],
+	specialEffect:[]
 }
 
 // Create an interactive map
@@ -31,11 +37,11 @@ let map = new InteractiveMap({
 
 	initializeMap() {
 		// A good place to load landmarks
-		this.loadLandmarks("landmarks-shop-evanston", (landmark) => {
+		this.loadLandmarks("landmarks-all-nu", (landmark) => {
 			// Keep this landmark?
 
 			// Keep all landmarks in the set
-			return true
+			// return true
 
 			// Only keep this landmark if its a store or amenity, e.g.
 			// return landmark.properties.amenity || landmark.properties.store
@@ -43,8 +49,7 @@ let map = new InteractiveMap({
 
 		// Create random landmarks
 		// You can also use this to create trails or clusters for the user to find
-		for (var i = 0; i < 10; i++) {
-
+		for (var i = 0; i < 20; i++) {
 			// make a polar offset (radius, theta) 
 			// from the map's center (units are *approximately* meters)
 			let position = clonePolarOffset(NU_CENTER, 400*Math.random() + 300, 20*Math.random())
@@ -84,19 +89,36 @@ let map = new InteractiveMap({
 
 		console.log("enter", landmark.name, newLevel)
 		if (newLevel == 2) {
+			// 2 is the closest level. -1 is outside the range. 0 is the furthest level but it's within range. then it's 1, 2
 
 			// Add points to my gamestate
-			gameState.points += landmark.points
+			if(gameState.points >= landmark.points){
+				let ptToAdd = landmark.points*(count>0?ptOffset:1)
+				gameState.points += ptToAdd
+				count--
+				if(count==0){
+					gameState.specialEffect=[]
+				}
+				// Have we captured this?
+				if (!gameState.captured.includes(landmark.name)) {
+					gameState.captured.push(landmark.name)
 
-			
-
-			// Have we captured this?
-			if (!gameState.captured.includes(landmark.name)) {
-				gameState.captured.push(landmark.name)
-				// Add a message
-				gameState.messages.push(`You captured ${landmark.name} for ${landmark.points} points`)
+					// Add a message
+					gameState.messages.push(`You captured ${landmark.name} for ${ptToAdd} points`)
+					if(landmark.points == 10){
+						let effect = hashMap.get(Math.floor(Math.random()*3)+1)
+						ptOffset = effect==="double points" ? 2: effect === "no points" ? 0 : 0.5
+						gameState.messages.push(`You activated ${effect}! It will be valid for the next 3 captures.`)
+						count = 3
+						gameState.specialEffect = []
+						gameState.specialEffect.push(effect)
+					}
+				}else{
+					gameState.messages.push(`You already captured ${landmark.name} before!`)
+				}
+			}else{
+				gameState.messages.push(`You need ${landmark.points-gameState.points} more points to capture ${landmark.name}.`)
 			}
-
 		}
 	},
 
@@ -114,7 +136,7 @@ let map = new InteractiveMap({
 
 		if (landmark.isPlayer) {
 			return {
-				icon: "person_pin_circle",
+				icon: "Face",
 				noBG: true // skip the background
 			}
 		}
@@ -122,22 +144,19 @@ let map = new InteractiveMap({
 		// Pick out a hue, we can reuse it for foreground and background
 		let hue = landmark.points*.1
 		return {
-			label: landmark.name + "\n" + landmark.distanceToPlayer +"m",
+			label: landmark.name + "\n" + landmark.distanceToPlayer +"m " + landmark.points + " pt",
 			fontSize: 8,
 
 			// Icons (in icon folder)
-			icon: "person_pin_circle",
-
+			icon: landmark.points==10?"priority_high":"Pets",
+		
 			// Colors are in HSL (hue, saturation, lightness)
 			iconColor: [hue, 1, .5],
 			bgColor: [hue, 1, .2],
-			noBG: false // skip the background
+			noBG: true // skip the background
 		}
 	},
-
-	
 })
-
 
 
 window.onload = (event) => {
