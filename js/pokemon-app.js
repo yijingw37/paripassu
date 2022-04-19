@@ -37,11 +37,11 @@ let map = new InteractiveMap({
 
 	initializeMap() {
 		// A good place to load landmarks
-		this.loadLandmarks("landmarks-all-nu", (landmark) => {
+		this.loadLandmarks("landmarks-shop-nu", (landmark) => {
 			// Keep this landmark?
 
 			// Keep all landmarks in the set
-			// return true
+			return true
 
 			// Only keep this landmark if its a store or amenity, e.g.
 			// return landmark.properties.amenity || landmark.properties.store
@@ -169,7 +169,7 @@ window.onload = (event) => {
 			<div id="main-columns">
 
 				<div class="main-column" style="flex:1;overflow:scroll;max-height:200px">
-					(TODO, add your own gamestate)
+
 					{{gameState}}
 					
 				</div>
