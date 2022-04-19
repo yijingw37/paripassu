@@ -136,7 +136,7 @@ let map = new InteractiveMap({
 
 		if (landmark.isPlayer) {
 			return {
-				icon: "Face",
+				icon: "face",
 				noBG: true // skip the background
 			}
 		}
@@ -148,7 +148,7 @@ let map = new InteractiveMap({
 			fontSize: 8,
 
 			// Icons (in icon folder)
-			icon: landmark.points==10?"priority_high":"Pets",
+			icon: landmark.points==10?"priority_high":"pets",
 		
 			// Colors are in HSL (hue, saturation, lightness)
 			iconColor: [hue, 1, .5],
