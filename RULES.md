@@ -6,3 +6,5 @@ You start with 3 points. You can only capture the pets with points smaller than 
 Every time you capture a pet, your score will increase by the point of the pet. 
 
 Pets with an ! icon are high-point pets. Capturing such pets will give you a special effect. The special effect can be double points - the points of your next 3 captures will be doubled, half points - the points of your next 3 captures will be havled, or no points - you will not gain any points for your next 3 captures. 
+
+If you capture a pet that you have already captured, you will still gain points, but you will not gain special effects again. 
